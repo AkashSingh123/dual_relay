@@ -1,0 +1,29 @@
+{
+    "configs": [
+        {
+            "source_domain_id": 1,
+            "source_destination_ip": "239.255.0.1",
+            "updated_domain_id": 2,
+            "updated_destination_ip": "239.255.0.2"
+        },
+        {
+            "source_domain_id": 2,
+            "source_destination_ip": "239.255.0.2",
+            "updated_domain_id": 3,
+            "updated_destination_ip": "239.255.0.3"
+        },
+        {
+            "source_domain_id": 3,
+            "source_destination_ip": "239.255.0.3",
+            "updated_domain_id": 4,
+            "updated_destination_ip": "239.255.0.4"
+        },
+        {
+            "source_domain_id": 4,
+            "source_destination_ip": "239.255.0.4",
+            "updated_domain_id": 1,
+            "updated_destination_ip": "239.255.0.1"
+        }
+        
+    ]
+}

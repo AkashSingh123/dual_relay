@@ -1,0 +1,6 @@
+/home/akash/git/RustDDS/FastDDS_interop_test/build/CMakeFiles/shape_type.dir
+/home/akash/git/RustDDS/FastDDS_interop_test/build/CMakeFiles/NetboxMessageL_type.dir
+/home/akash/git/RustDDS/FastDDS_interop_test/build/CMakeFiles/NetboxMessage_type.dir
+/home/akash/git/RustDDS/FastDDS_interop_test/build/CMakeFiles/secure_shapes.dir
+/home/akash/git/RustDDS/FastDDS_interop_test/build/CMakeFiles/edit_cache.dir
+/home/akash/git/RustDDS/FastDDS_interop_test/build/CMakeFiles/rebuild_cache.dir

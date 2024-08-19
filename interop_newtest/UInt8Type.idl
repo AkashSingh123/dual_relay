@@ -1,0 +1,4 @@
+struct UInt8Type
+{
+    uint8 value;
+};

@@ -1,6 +1,12 @@
 #include "ShapePublisher.hpp"
 #include "ShapeSubscriber.hpp"
-
+#include <string.h>
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <fastdds/dds/log/FileConsumer.hpp>
+#include <fastrtps/log/Log.h>
+#include <fastrtps/log/FileConsumer.h>
 #include <string.h>
 #include <iostream>
 #include <fastdds/dds/log/FileConsumer.hpp>
@@ -61,6 +67,8 @@ int main(int number_of_arguments, char **argument_values)
         if (subscriber.init(false))
         {
             subscriber.run();
+            std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Add a delay in the loop
+
         };
     }
 

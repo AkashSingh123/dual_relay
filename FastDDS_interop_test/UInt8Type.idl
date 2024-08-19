@@ -1,0 +1,5 @@
+struct UInt8Type
+{
+    @Key
+    uint8 value;
+};
