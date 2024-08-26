@@ -1,12 +1,11 @@
-/*
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/publisher/Publisher.hpp>
 #include <fastdds/dds/publisher/DataWriter.hpp>
 #include <fastdds/dds/publisher/DataWriterListener.hpp>
 #include <fastdds/dds/topic/TypeSupport.hpp>
-#include "NetboxMessagePubSubTypes.h"
+#include "NetboxMessage1PubSubTypes.h"
 #include "globals.hpp"
-
+#include "NetboxMessage2PubSubTypes.h"
 using namespace eprosima::fastdds::dds;
 
 class ShapePublisher
@@ -39,7 +38,7 @@ private:
    // void publish_data(const std::vector<uint8_t>& payload);
 
 };
-*/
+
 
 /*
 using namespace eprosima::fastdds::dds;
@@ -67,7 +66,7 @@ private:
 
    // static void capture_tshark();
 };
-*/
+
 /*
 using namespace eprosima::fastdds::dds;
 
@@ -100,7 +99,7 @@ private:
 
 
 
-
+/*
 
 #ifndef SHAPE_PUBLISHER_HPP
 #define SHAPE_PUBLISHER_HPP
@@ -145,7 +144,7 @@ struct ParticipantData {
     std::vector<WriterData> writers_data;
 };
 */
-
+/*
 class ShapePublisher
 {
 public:
@@ -175,5 +174,5 @@ private:
 };
 
 #endif // SHAPE_PUBLISHER_HPP 
-
+*/
 

@@ -1,4 +1,3 @@
-
 #include <fastdds/dds/subscriber/qos/DataReaderQos.hpp>
 #include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
 #include <unistd.h>
@@ -238,28 +237,6 @@ void print_qos(const DataReaderQos& qos) {
 
 
 
-/*void print_qos(const DataReaderQos& qos) {
-    std::cout << "Reliability: " << (qos.reliability().kind == RELIABLE_RELIABILITY_QOS ? "RELIABLE" : "BEST_EFFORT") << std::endl;
-    std::cout << "Durability: " << (qos.durability().kind == TRANSIENT_LOCAL_DURABILITY_QOS ? "TRANSIENT_LOCAL" : "VOLATILE") << std::endl;
-    std::cout << "Deadline: " << qos.deadline().period.seconds << "s " << qos.deadline().period.nanosec << "ns" << std::endl;
-    std::cout << "Latency Budget: " << qos.latency_budget().duration.seconds << "s " << qos.latency_budget().duration.nanosec << "ns" << std::endl;
-    std::cout << "Liveliness: " << (qos.liveliness().kind == AUTOMATIC_LIVELINESS_QOS ? "AUTOMATIC" : "MANUAL") << " Lease Duration: " << qos.liveliness().lease_duration.seconds << "s " << qos.liveliness().lease_duration.nanosec << "ns" << std::endl;
-    std::cout << "History: " << (qos.history().kind == KEEP_ALL_HISTORY_QOS ? "KEEP_ALL" : "KEEP_LAST") << " Depth: " << qos.history().depth << std::endl;
-    std::cout << "Resource Limits: Max Samples: " << qos.resource_limits().max_samples << " Max Instances: " << qos.resource_limits().max_instances << " Max Samples Per Instance: " << qos.resource_limits().max_samples_per_instance << std::endl;
-}
-
-void print_qos(const TopicQos& qos) {
-    std::cout << "Reliability: " << (qos.reliability().kind == RELIABLE_RELIABILITY_QOS ? "RELIABLE" : "BEST_EFFORT") << std::endl;
-    std::cout << "Durability: " << (qos.durability().kind == TRANSIENT_LOCAL_DURABILITY_QOS ? "TRANSIENT_LOCAL" : "VOLATILE") << std::endl;
-    std::cout << "Deadline: " << qos.deadline().period.seconds << "s " << qos.deadline().period.nanosec << "ns" << std::endl;
-    std::cout << "Latency Budget: " << qos.latency_budget().duration.seconds << "s " << qos.latency_budget().duration.nanosec << "ns" << std::endl;
-    std::cout << "Liveliness: " << (qos.liveliness().kind == AUTOMATIC_LIVELINESS_QOS ? "AUTOMATIC" : "MANUAL") << " Lease Duration: " << qos.liveliness().lease_duration.seconds << "s " << qos.liveliness().lease_duration.nanosec << "ns" << std::endl;
-    std::cout << "History: " << (qos.history().kind == KEEP_ALL_HISTORY_QOS ? "KEEP_ALL" : "KEEP_LAST") << " Depth: " << qos.history().depth << std::endl;
-    std::cout << "Resource Limits: Max Samples: " << qos.resource_limits().max_samples << " Max Instances: " << qos.resource_limits().max_instances << " Max Samples Per Instance: " << qos.resource_limits().max_samples_per_instance << std::endl;
-}*/
-
-
-
 
 
 bool ShapeSubscriber::init(bool with_security)
@@ -267,40 +244,7 @@ bool ShapeSubscriber::init(bool with_security)
     DomainParticipantQos participant_qos;
     participant_qos.name("subscriber_participant");
 
-    if (with_security)
-    {
-        using namespace std;
-        string example_security_configuration_path = "file://../../examples/security_configuration_files/";
-        string dds_sec = "dds.sec.";
-        string auth = dds_sec + "auth.";
-        string auth_plugin = "builtin.PKI-DH";
-        string auth_prefix = auth + auth_plugin + ".";
-        string access = dds_sec + "access.";
-        string access_plugin = "builtin.Access-Permissions";
-        string access_prefix = access + access_plugin + ".";
-        string crypto = dds_sec + "crypto.";
-        string crypto_plugin = "builtin.AES-GCM-GMAC";
-        string plugin = "plugin";
-
-        std::vector<pair<string, string>> security_properties = {
-            pair<string, string>(auth + plugin, auth_plugin),
-            pair<string, string>(access + plugin, access_plugin),
-            pair<string, string>(crypto + plugin, crypto_plugin),
-            pair<string, string>(auth_prefix + "identity_ca", example_security_configuration_path + "identity_ca.cert.pem"),
-            pair<string, string>(auth_prefix + "identity_certificate", example_security_configuration_path + "cert.pem"),
-            pair<string, string>(auth_prefix + "private_key", example_security_configuration_path + "key.pem"),
-            pair<string, string>(access_prefix + "permissions_ca", example_security_configuration_path + "permissions_ca.cert.pem"),
-            pair<string, string>(access_prefix + "governance", example_security_configuration_path + "governance.p7s"),
-            pair<string, string>(access_prefix + "permissions", example_security_configuration_path + "permissions.p7s"),
-        };
-
-        for (pair<string, string> property : security_properties)
-        {
-            participant_qos.properties().properties().emplace_back(property.first, property.second);
-        }
-    }
-
-    participant_ = DomainParticipantFactory::get_instance()->create_participant(1, participant_qos);
+    participant_ = DomainParticipantFactory::get_instance()->create_participant(7, participant_qos);
 
     if (participant_)
     {
@@ -312,48 +256,27 @@ bool ShapeSubscriber::init(bool with_security)
 
     SubscriberQos subscriber_qos = SUBSCRIBER_QOS_DEFAULT;
     subscriber_qos.entity_factory().autoenable_created_entities = true; //false fails
-    //subscriber_qos.partition().names().push_back("partitionA");
-    //subscriber_qos.presentation().access_scope = PresentationQosPolicyAccessScopeKind::GROUP_PRESENTATION_QOS;
     subscriber_qos.presentation().coherent_access = true;
     subscriber_qos.presentation().ordered_access = true;
- //   subscriber_qos.partition().max_size = 3; // Maximum size for partition names list
- //   subscriber_qos.partition().names().push_back("Partition1");
- //   subscriber_qos.partition().names().push_back("Partition2");
- //   subscriber_qos.partition().names().push_back("Partition3");
-
-//To maintain the compatibility between DurabilityQosPolicy in DataReaders and DataWriters when they have different kind values, the DataWriter kind must be higher or equal to the DataReader kind. And the order between the different kinds is:VOLATILE_DURABILITY_QOS < TRANSIENT_LOCAL_DURABILITY_QOS < TRANSIENT_DURABILITY_QOS < PERSISTENT_DURABILITY_QOS
 
 
     
     
     datareader_qos.durability().kind = VOLATILE_DURABILITY_QOS; //starts sub
     datareader_qos.history().kind = KEEP_ALL_HISTORY_QOS;
-    //datareader_qos.history().kind = KEEP_LAST_HISTORY_QOS;
-    //datareader_qos.history().depth = 80; // Set the history depth to 10
-    //datareader_qos.deadline().period = eprosima::fastrtps::Duration_t(1, 0); // Set deadline period to 5 seconds
-
     datareader_qos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
     //datareader_qos.liveliness().kind= AUTOMATIC_LIVELINESS_QOS;
     datareader_qos.liveliness().lease_duration = eprosima::fastrtps::c_TimeInfinite; // Set an appropriate lease duration
     datareader_qos.resource_limits().max_samples = 300000000; // Set a high number to accumulate more data
     datareader_qos.resource_limits().max_instances = 1110;  // Adjust as needed
     datareader_qos.resource_limits().max_samples_per_instance = 13542;
-    //datareader_qos.liveliness().kind = MANUAL_BY_PARTICIPANT_LIVELINESS_QOS;
-    //datareader_qos.destination_order().kind = BY_RECEPTION_TIMESTAMP_DESTINATIONORDER_QOS;
-   // datareader_qos.deadline().period = Duration_t(0, 0.1000000); // 0 seconds and 500 million nanoseconds (500 ms)
-
-    //datareader_qos.resource_limits().max_samples_per_instance = 10000; // Set a high number to accumulate more data
-
-   // datareader_qos.deadline().period = Duration_t(2, 0); // 2 seconds
-   // datareader_qos.durability().kind = TRANSIENT_LOCAL_DURABILITY_QOS; // Add durability setting failed/stops reader, Transient local doesnt start taking data
-   // datareader_qos.liveliness().kind = MANUAL_BY_PARTICIPANT_LIVELINESS_QOS;//Failes
     print_qos(datareader_qos);
 
 
     //Configure multicast settings
     eprosima::fastrtps::rtps::Locator_t multicast_locator;
     multicast_locator.kind = LOCATOR_KIND_UDPv4;
-    eprosima::fastrtps::rtps::IPLocator::setIPv4(multicast_locator, 239, 255, 0, 1); // Multicast address
+    eprosima::fastrtps::rtps::IPLocator::setIPv4(multicast_locator, 239, 255, 0, 7); // Multicast address
     multicast_locator.port = 7900; // Multicast port
 
     //std::cout << "Default DataReader QoS Settings:" << std::endl;
@@ -382,7 +305,7 @@ bool ShapeSubscriber::init(bool with_security)
     print_qos(topic_qos);
     if (participant_)
     {
-        topic_ = participant_->create_topic("pos", type_.get_type_name(), topic_qos);
+        topic_ = participant_->create_topic("0", type_.get_type_name(), topic_qos);
     }
 
 
@@ -495,7 +418,8 @@ void ShapeSubscriber::SubscriberListener::on_data_available(DataReader* reader)
         ++received_samples;
         //const <uint64_t>& data = sample.timestamp(); 
        // printf("Size of data vector: %zu\n", data.size());
-        
+        printf("Message ID: %u\n", sample.id());
+
         const std::vector<uint8_t>& bata = sample.data(); 
 
 

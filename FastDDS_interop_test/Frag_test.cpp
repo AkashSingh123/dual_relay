@@ -2,8 +2,8 @@
 #include <vector>
 #include <mutex>
 #include <condition_variable>
-#include "ShapePublisher.hpp"
-#include "NetboxMessagePubSubTypes.h"
+#include "shapepublisher2.hpp"
+#include "NetboxMessage2PubSubTypes.h"
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/dds/topic/qos/TopicQos.hpp>
 #include <fastdds/dds/publisher/qos/PublisherQos.hpp>
@@ -37,8 +37,7 @@
 #include <vector>
 #include <mutex>
 #include <condition_variable>
-#include "ShapePublisher.hpp"
-#include "NetboxMessagePubSubTypes.h"
+#include "NetboxMessage2PubSubTypes.h"
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/dds/topic/qos/TopicQos.hpp>
 #include <fastdds/dds/publisher/qos/PublisherQos.hpp>
@@ -67,8 +66,7 @@
 #include <vector>
 #include <iomanip>
 #include "globals.hpp"
-#include "NetboxMessageLPubSubTypes.h"
-#include "NetboxMessagePubSubTypes.h"
+#include "NetboxMessage2PubSubTypes.h"
 #include <fastdds/rtps/common/Locator.h>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/dds/publisher/Publisher.hpp>
@@ -121,7 +119,7 @@ const std::string hex_target_update = "74 61 72 67 65 74 5f 75 70 64 61 74 65"; 
 
 //std::vector<Config> ShapePublisher::configs; // Define the static member
 
-ShapePublisher::ShapePublisher() : type_(new NetboxMessagePubSubType()), listener_()
+ShapePublisher::ShapePublisher() : type_(new NetboxMessage2PubSubType()), listener_()
 {
     load_configs_from_file("config.json");
 }
@@ -261,6 +259,7 @@ bool ShapePublisher::init(bool with_security)
 
         // Create Topic
         TopicQos topic_qos = TOPIC_QOS_DEFAULT;
+        topic_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;     
         participant_data.topic = participant_data.participant->create_topic("pos", type_.get_type_name(), topic_qos);
         if (!participant_data.topic)
         {
@@ -273,9 +272,22 @@ bool ShapePublisher::init(bool with_security)
         datawriter_qos.endpoint().unicast_locator_list.clear();
         datawriter_qos.endpoint().multicast_locator_list.clear();
         datawriter_qos.reliability().kind = RELIABLE_RELIABILITY_QOS; // Set to reliable reliability
-        datawriter_qos.durability().kind = VOLATILE_DURABILITY_QOS;
-        datawriter_qos.history().kind = KEEP_ALL_HISTORY_QOS;
+       // datawriter_qos.durability().kind = VOLATILE_DURABILITY_QOS;
+       // datawriter_qos.history().kind = KEEP_ALL_HISTORY_QOS;
       //  datawriter_qos.reliability().max_fragment_size = 1024;
+
+       datawriter_qos.reliable_writer_qos().times.initialHeartbeatDelay = {0, 0};
+ 
+       // Set heartbeat period to 1 second (can be adjusted as needed)
+       datawriter_qos.reliable_writer_qos().times.heartbeatPeriod = {1, 0};  // 1 second interval
+
+      // Set nack response delay to a low value for quick response
+       datawriter_qos.reliable_writer_qos().times.nackResponseDelay = {0, 10};  // 10 milliseconds
+
+
+
+
+
 
         datawriter_qos.endpoint().multicast_locator_list.push_back(multicast_locator);
         //participant_qos.wire_protocol().builtin.metatrafficMulticastLocatorList.clear();
@@ -420,7 +432,7 @@ void capture_rtps() {
 
                     // Send the accumulated payload
                     std::lock_guard<std::mutex> lock(mtx); // Lock the mutex
-                    NetboxMessage sample;
+                    NetboxMessage2 sample;
                     sample.id(2);
                     sample.data().clear();
                     sample.data() = context->accumulated_payload; // Use the accumulated payload
@@ -482,7 +494,7 @@ void capture_rtps() {
 
                             // Set the payload in the sample 
                             std::lock_guard<std::mutex> lock(mtx); // Lock the mutex
-                            NetboxMessage sample;
+                            NetboxMessage2 sample;
                             sample.id(2);
                             sample.data().clear();
                             sample.data() = payload;
@@ -585,7 +597,7 @@ void capture_rtps() {
 
                     // Send the accumulated payload
                     std::lock_guard<std::mutex> lock(mtx); // Lock the mutex
-                    NetboxMessage sample;
+                    NetboxMessage2 sample;
                     sample.id(2);
                     sample.data().clear();
                     sample.data() = context->accumulated_payload; // Use the accumulated payload
@@ -1170,6 +1182,7 @@ void ShapePublisher::SubscriberListener::on_publication_matched(DataWriter*, con
     matched = info.current_count;
     std::cout << "Number of matched readers: " << matched << std::endl;
 }
+
 
 
 

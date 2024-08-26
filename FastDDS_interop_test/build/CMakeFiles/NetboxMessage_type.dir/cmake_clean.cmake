@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/NetboxMessage_type.dir/NetboxMessage.cxx.o"
-  "CMakeFiles/NetboxMessage_type.dir/NetboxMessage.cxx.o.d"
+  "CMakeFiles/NetboxMessage_type.dir/NetboxMessage1.cxx.o"
+  "CMakeFiles/NetboxMessage_type.dir/NetboxMessage1.cxx.o.d"
   "libNetboxMessage_type.a"
   "libNetboxMessage_type.pdb"
 )

@@ -176,7 +176,7 @@ void ShapePublisher::run()
   
   
   
-    sample.data() = received_payload;
+    sample.payload() = received_payload;
 
 
     int number_of_messages_sent = 0;

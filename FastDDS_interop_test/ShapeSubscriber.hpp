@@ -4,8 +4,8 @@
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/subscriber/DataReaderListener.hpp>
 #include <fastdds/dds/topic/TypeSupport.hpp>
-#include "NetboxMessagePubSubTypes.h"
-
+#include "NetboxMessage1PubSubTypes.h"
+#include "NetboxMessage2PubSubTypes.h"
 class ShapeSubscriber
 {
 public:

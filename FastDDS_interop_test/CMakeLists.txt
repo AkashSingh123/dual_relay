@@ -16,19 +16,40 @@ include_directories(/usr/include/jsoncpp) # Include directory for jsoncpp
 add_library(shape_type Shape.cxx)
 target_link_libraries(shape_type fastcdr fastrtps)
 
-add_library(NetboxMessageL_type NetboxMessageL.cxx)
-target_link_libraries(NetboxMessageL_type fastcdr fastrtps)
+
+add_library(NetboxMessage1_type NetboxMessage1.cxx)
+target_link_libraries(NetboxMessage1_type fastcdr fastrtps)
 
 
-add_library(NetboxMessage_type NetboxMessage.cxx)
-target_link_libraries(NetboxMessage_type fastcdr fastrtps)
+add_library(NetboxMessage2_type NetboxMessage2.cxx)
+target_link_libraries(NetboxMessage2_type fastcdr fastrtps)
 
+
+#add_library(newmessage_type newmessage.cxx)
+#target_link_libraries(newmessage_type fastcdr fastrtps)
 
 find_library(JSONCPP_LIB jsoncpp HINTS "/usr/lib" "/usr/lib/x86_64-linux-gnu")
 
 #set(NETBOX_CPP_LIB_PATH "/home/akash/git2/netbox-mirroring/netbox-cpp/build/rust_part")
 
 # Create the secure_shapes executable and link the necessary libraries
-add_executable(secure_shapes ShapePubSubTypes.cxx NetboxMessagePubSubTypes.cxx NetboxMessageLPubSubTypes.cxx multicaste_test.cpp subscriber_test.cpp main.cpp globals.cpp)
-target_link_libraries(secure_shapes fastcdr fastrtps shape_type NetboxMessageL_type NetboxMessage_type pcap ${JSONCPP_LIBRARIES})
+#add_executable(pubsub_reversemessage NetboxMessage1PubSubTypes.cxx NetboxMessage2PubSubTypes.cxx pubsub_reversemessage.cpp)
+#add_executable(secure_shapes ShapePubSubTypes.cxx NetboxMessage1PubSubTypes.cxx NetboxMessage1PubSubTypes test_qos.cpp subscriber_test2.cpp main.cpp globals.cpp)
+#add_executable(secure_shapes ShapePubSubTypes.cxx NetboxMessagePubSubTypes.cxx fastdds_pub.cpp subscriber_test2.cpp main.cpp globals.cpp)
+#add_executable(secure_shapes ShapePubSubTypes.cxx NetboxMessagePubSubTypes.cxx sniff_sub.cpp globals.cpp)
+#add_executable(secure_shapes ShapePubSubTypes.cxx NetboxMessage1PubSubTypes.cxx NetboxMessage2PubSubTypes.cxx pubsub_sniff.cpp globals.cpp)
 
+add_executable(pubsub_newmessage ShapePubSubTypes.cxx NetboxMessage1PubSubTypes.cxx NetboxMessage1PubSubTypes.cxx NetboxMessage2PubSubTypes.cxx pubsub_newmessage.cpp globals.cpp)
+add_executable(secure_shapes ShapePubSubTypes.cxx NetboxMessage2PubSubTypes.cxx  NetboxMessage1PubSubTypes.cxx Frag_test.cpp subscriber_test2.cpp main.cpp globals.cpp)
+add_executable(pubsub_reversemessage NetboxMessage1PubSubTypes.cxx NetboxMessage2PubSubTypes.cxx pubsub_reversemessage.cpp)
+add_executable(pubsub_reversemessage2 NetboxMessage1PubSubTypes.cxx NetboxMessage2PubSubTypes.cxx pubsub_reversemessage2.cpp)
+add_executable(pubsub_reversemessage3 NetboxMessage1PubSubTypes.cxx NetboxMessage2PubSubTypes.cxx pubsub_reversemessage3.cpp)
+
+
+
+target_link_libraries(pubsub_newmessage fastcdr fastrtps shape_type NetboxMessage1_type NetboxMessage2_type pcap ${JSONCPP_LIBRARIES})
+target_link_libraries(pubsub_reversemessage fastcdr fastrtps shape_type NetboxMessage1_type NetboxMessage2_type pcap ${JSONCPP_LIBRARIES})
+target_link_libraries(pubsub_reversemessage2 fastcdr fastrtps shape_type NetboxMessage1_type NetboxMessage2_type pcap ${JSONCPP_LIBRARIES})
+target_link_libraries(pubsub_reversemessage3 fastcdr fastrtps shape_type NetboxMessage1_type NetboxMessage2_type pcap ${JSONCPP_LIBRARIES})
+
+target_link_libraries(secure_shapes fastcdr fastrtps shape_type NetboxMessage1_type NetboxMessage2_type pcap ${JSONCPP_LIBRARIES})

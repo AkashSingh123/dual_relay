@@ -16,6 +16,12 @@ struct Config {
     int updated_domain_id;
     std::string updated_destination_ip;
 };
+/*struct Config {
+    int source_domain_id;
+    std::string source_destination_ip;
+    std::vector<int> updated_domain_ids;  // Store multiple domain IDs
+    std::vector<std::string> updated_destination_ips;  // Store multiple destination IPs
+};*/
 
 struct WriterData {
     eprosima::fastdds::dds::DataWriter* writer;

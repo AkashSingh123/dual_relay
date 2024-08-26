@@ -144,6 +144,7 @@ void ShapePublisher::print_all_participants_data() const
     }
 }
 
+
 bool ShapePublisher::init(bool with_security)
 {
     for (const auto& config : configs)
@@ -163,11 +164,23 @@ bool ShapePublisher::init(bool with_security)
         udp_transport->non_blocking_send = true;
         udp_transport->sendBufferSize = 65536;
         udp_transport->receiveBufferSize = 65536;
-        participant_qos.transport().user_transports.push_back(udp_transport);
-        participant_qos.transport().use_builtin_transports = false;
+        //participant_qos.transport().user_transports.push_back(udp_transport);
+        //participant_qos.transport().use_builtin_transports = false;
 
-        // Ensure the unicast locators are cleared
+        // Clear any existing unicast locators in built-in settings (meta traffic)
         participant_qos.wire_protocol().builtin.metatrafficUnicastLocatorList.clear();
+        participant_qos.wire_protocol().builtin.metatrafficMulticastLocatorList.clear();
+        // Add the multicast locator to the participant's metatraffic multicast locator list
+        eprosima::fastrtps::rtps::Locator_t multicast_locator;
+        multicast_locator.kind = LOCATOR_KIND_UDPv4;
+        eprosima::fastrtps::rtps::IPLocator::setIPv4(multicast_locator, config.updated_destination_ip);
+        multicast_locator.port = 7900;
+
+        // Set default multicast locator for the participant
+        eprosima::fastrtps::rtps::LocatorList_t locators;
+        locators.push_back(multicast_locator);
+        
+        //participant_qos.wire_protocol().builtin.metatrafficMulticastLocatorList = locators;  // For metatraffic (e.g., discovery traffic)
 
         // Create DomainParticipant
         ParticipantData participant_data;
@@ -203,15 +216,9 @@ bool ShapePublisher::init(bool with_security)
         datawriter_qos.endpoint().unicast_locator_list.clear();  // Clear unicast locators
         datawriter_qos.endpoint().multicast_locator_list.clear(); // Clear existing multicast locators
 
-        // Add the multicast locator
-        eprosima::fastrtps::rtps::Locator_t multicast_locator;
-        multicast_locator.kind = LOCATOR_KIND_UDPv4;
-        eprosima::fastrtps::rtps::IPLocator::setIPv4(multicast_locator, config.updated_destination_ip);
-        multicast_locator.port = 7900;
-
         datawriter_qos.endpoint().multicast_locator_list.push_back(multicast_locator);
 
-        datawriter_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;
+        datawriter_qos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
         datawriter_qos.durability().kind = VOLATILE_DURABILITY_QOS;
         datawriter_qos.history().kind = KEEP_ALL_HISTORY_QOS;
 
@@ -239,6 +246,7 @@ bool ShapePublisher::init(bool with_security)
 
     return true;
 }
+
 
 
 
@@ -966,8 +974,5 @@ void ShapePublisher::SubscriberListener::on_publication_matched(DataWriter*, con
     matched = info.current_count;
     std::cout << "Number of matched readers: " << matched << std::endl;
 }
-
-
-
 
 
