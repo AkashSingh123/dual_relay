@@ -1,2 +1,0 @@
-/usr/bin/ar qc libNetboxMessage_type.a CMakeFiles/NetboxMessage_type.dir/NetboxMessage1.cxx.o
-/usr/bin/ranlib libNetboxMessage_type.a

@@ -1,0 +1,29 @@
+{  
+  "unicaste_ip": "192.168.234.29",
+  "configs": [
+    {
+      "source_domain_id": 1,
+      "source_destination_ip": "239.255.0.1",
+      "updated_domain_ids": [7, 8, 9],
+      "updated_destination_ips": ["239.255.0.7", "239.255.0.8", "239.255.0.9"]
+    },
+    {
+      "source_domain_id": 7,
+      "source_destination_ip": "239.255.0.7",
+      "updated_domain_ids": [1],
+      "updated_destination_ips": ["239.255.0.1"]
+    },
+    {
+      "source_domain_id": 8,
+      "source_destination_ip": "239.255.0.8",
+      "updated_domain_ids": [1],
+      "updated_destination_ips": ["239.255.0.1"]
+    },
+    {
+      "source_domain_id": 9,
+      "source_destination_ip": "239.255.0.9",
+      "updated_domain_ids": [1],
+      "updated_destination_ips": ["239.255.0.1"]
+    }
+  ]
+}

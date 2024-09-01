@@ -1,0 +1,5 @@
+struct NetboxMessage2 {
+    @key
+    uint8 id;            // Change from uint64 to uint8
+    sequence<uint8> data; // Adjust size as necessary
+};
