@@ -1,7 +1,0 @@
-struct NetboxMessage {
-    @key
-    uint16 id;
-    sequence<string> topics;
-    uint64 timestamp;
-    sequence<uint8> payload;
-};
