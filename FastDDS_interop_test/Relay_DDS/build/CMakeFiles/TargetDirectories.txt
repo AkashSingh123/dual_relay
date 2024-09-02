@@ -1,7 +1,0 @@
-/home/akash/git2/fastdds_relay/RustDDS/FastDDS_interop_test/Relay_DDS/build/CMakeFiles/NetboxMessage1_type.dir
-/home/akash/git2/fastdds_relay/RustDDS/FastDDS_interop_test/Relay_DDS/build/CMakeFiles/NetboxMessage2_type.dir
-/home/akash/git2/fastdds_relay/RustDDS/FastDDS_interop_test/Relay_DDS/build/CMakeFiles/Frag_test.dir
-/home/akash/git2/fastdds_relay/RustDDS/FastDDS_interop_test/Relay_DDS/build/CMakeFiles/multiple_writer.dir
-/home/akash/git2/fastdds_relay/RustDDS/FastDDS_interop_test/Relay_DDS/build/CMakeFiles/topic_dds_relay.dir
-/home/akash/git2/fastdds_relay/RustDDS/FastDDS_interop_test/Relay_DDS/build/CMakeFiles/edit_cache.dir
-/home/akash/git2/fastdds_relay/RustDDS/FastDDS_interop_test/Relay_DDS/build/CMakeFiles/rebuild_cache.dir
