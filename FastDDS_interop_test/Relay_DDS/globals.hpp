@@ -10,6 +10,7 @@
 #include <fastdds/dds/publisher/Publisher.hpp>
 #include <fastdds/dds/publisher/DataWriter.hpp>
 #include <chrono>
+#include <json/json.h>  // Add this at the top of globals.hpp
 /*struct Config {
     int source_domain_id;
     std::string source_destination_ip;
