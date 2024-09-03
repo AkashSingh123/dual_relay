@@ -21,6 +21,7 @@ struct Config {
     std::string source_destination_ip;
     std::vector<int> updated_domain_ids;  // Store multiple domain IDs
     std::vector<std::string> updated_destination_ips;  // Store multiple destination IPs
+    Json::Value qos_settings;  // Store all QoS settings in a single JSON object
 };
 
 struct WriterData {
