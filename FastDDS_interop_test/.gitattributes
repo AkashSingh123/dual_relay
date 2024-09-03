@@ -1,4 +1,0 @@
-path/to/largefile filter=lfs diff=lfs merge=lfs -text
-build_scripts/* filter=lfs diff=lfs merge=lfs -text
-Relay_DDS/* filter=lfs diff=lfs merge=lfs -text
-swamtype/* filter=lfs diff=lfs merge=lfs -text
