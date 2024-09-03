@@ -53,6 +53,11 @@ private:
         std::vector<int> updated_domain_ids;
         std::vector<std::string> updated_destination_ips;
         std::vector<std::string> topics;  // List of topics
+        Json::Value reader_qos_settings;
+
+        // QoS settings for DataWriter
+        Json::Value writer_qos_settings;
+        Json::Value topic_qos_settings;   // QoS settings for Topic
     };
 
     //bool load_config(const std::string& config_file);
@@ -197,6 +202,17 @@ bool CombinedPubSub::load_config()
         {
             cfg.topics.push_back(topic.asString());
         }
+        
+        
+        // Load reader QoS settings
+        cfg.reader_qos_settings = config["reader_qos_settings"];
+
+        // Load writer QoS settings
+        cfg.writer_qos_settings = config["writer_qos_settings"];
+        
+        cfg.topic_qos_settings = config["topic_qos_settings"]; // Load Topic QoS settings
+
+
         configs_.push_back(cfg);
     }
     return true;
@@ -242,13 +258,53 @@ bool CombinedPubSub::init()
         for (const auto& topic_name : config.topics)
         {
             DataReaderQos datareader_qos = DATAREADER_QOS_DEFAULT;
-            datareader_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;
-            datareader_qos.history().kind = KEEP_ALL_HISTORY_QOS;
-            datareader_qos.history().depth = 10;
-            datareader_qos.durability().kind = VOLATILE_DURABILITY_QOS;
-            datareader_qos.latency_budget().duration = {0, 0}; // No latency budget
+            
+            
+        if (config.reader_qos_settings.isMember("reliability")) {
+            if (config.reader_qos_settings["reliability"].asString() == "RELIABLE_RELIABILITY_QOS")
+                datareader_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;
+            else if (config.reader_qos_settings["reliability"].asString() == "BEST_EFFORT_RELIABILITY_QOS")
+                datareader_qos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
+        }
 
-         //   datareader_qos.deadline().period = eprosima::fastrtps::c_TimeInfinite;  // Match infinite deadline
+        if (config.reader_qos_settings.isMember("durability")) {
+            if (config.reader_qos_settings["durability"].asString() == "VOLATILE_DURABILITY_QOS")
+                datareader_qos.durability().kind = VOLATILE_DURABILITY_QOS;
+            else if (config.reader_qos_settings["durability"].asString() == "TRANSIENT_LOCAL_DURABILITY_QOS")
+                datareader_qos.durability().kind = TRANSIENT_LOCAL_DURABILITY_QOS;
+        }
+
+        if (config.reader_qos_settings.isMember("history")) {
+            if (config.reader_qos_settings["history"].asString() == "KEEP_LAST_HISTORY_QOS")
+                datareader_qos.history().kind = KEEP_LAST_HISTORY_QOS;
+            else if (config.reader_qos_settings["history"].asString() == "KEEP_ALL_HISTORY_QOS")
+                datareader_qos.history().kind = KEEP_ALL_HISTORY_QOS;
+        }
+
+        if (config.reader_qos_settings.isMember("history_depth")) {
+            datareader_qos.history().depth = config.reader_qos_settings["history_depth"].asInt();
+        }
+        
+        
+        
+
+            std::cout << "DataReader Reliability QoS: " << (datareader_qos.reliability().kind == RELIABLE_RELIABILITY_QOS ? "RELIABLE" : "BEST_EFFORT") << std::endl;
+
+
+            std::cout << "DataReader History QoS: " << (datareader_qos.history().kind == KEEP_LAST_HISTORY_QOS ? "KEEP_LAST" : "KEEP_ALL") << std::endl;
+
+ 
+            std::cout << "DataReader History Depth: " << datareader_qos.history().depth << std::endl;
+
+
+            std::cout << "DataReader Durability QoS: " << (datareader_qos.durability().kind == VOLATILE_DURABILITY_QOS ? "VOLATILE" : "TRANSIENT_LOCAL") << std::endl;
+
+            
+            datareader_qos.latency_budget().duration = {0, 200000000}; // No latency budget
+
+         //   datareader_qos.deadline().period = eprosima::fastrtps::Duration_t(1, 0); // 1 second
+
+         
           //  datareader_qos.latency_budget().duration = {0, 0};
           //  datareader_qos.durability().kind = TRANSIENT_DURABILITY_QOS;
 
@@ -260,11 +316,9 @@ bool CombinedPubSub::init()
  
             datareader_qos.reliable_reader_qos().times.initialAcknackDelay = {0, 70000000};
             
-          //  datareader_qos.reliable_reader_qos().times.AcknackDelay = {0, 70000000};
 
             datareader_qos.reliable_reader_qos().times.heartbeatResponseDelay = {0, 5000000}; // 5 milliseconds
 
-        //    datareader_qos.reliable_reader_qos().times.nackResponseDelay = {0, 5000000};  // 5 milliseconds
 
 
             datareader_qos.endpoint().unicast_locator_list.clear();
@@ -292,8 +346,26 @@ bool CombinedPubSub::init()
             datareader_qos.endpoint().multicast_locator_list.push_back(sub_multicast_locator);
 
             TopicQos topic_qos = TOPIC_QOS_DEFAULT;
-            topic_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;
             
+            if (config.topic_qos_settings.isMember("reliability")) {
+              if (config.topic_qos_settings["reliability"].asString() == "RELIABLE_RELIABILITY_QOS")
+                topic_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;
+              else if (config.topic_qos_settings["reliability"].asString() == "BEST_EFFORT_RELIABILITY_QOS")
+                topic_qos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
+             }
+            
+            
+            if (config.topic_qos_settings.isMember("durability")) {
+               if (config.topic_qos_settings["durability"].asString() == "VOLATILE_DURABILITY_QOS") {
+                 topic_qos.durability().kind = VOLATILE_DURABILITY_QOS;
+            } else if (config.topic_qos_settings["durability"].asString() == "TRANSIENT_LOCAL_DURABILITY_QOS") {
+               topic_qos.durability().kind = TRANSIENT_LOCAL_DURABILITY_QOS;
+             }
+            }
+
+            std::cout << " TOPIC Reliability QoS: " << (topic_qos.reliability().kind == RELIABLE_RELIABILITY_QOS ? "RELIABLE" : "BEST_EFFORT") << std::endl;
+            std::cout << " TOPIC Durability QoS: " << (topic_qos.durability().kind == VOLATILE_DURABILITY_QOS ? "VOLATILE" : "TRANSIENT_LOCAL") << std::endl;
+
             
             Topic* topic = sub_participant->create_topic(topic_name, type_.get_type_name(), topic_qos);
             if (!topic)
@@ -353,10 +425,48 @@ bool CombinedPubSub::init()
                 topics_.push_back(pub_topic);
 
                 DataWriterQos datawriter_qos = DATAWRITER_QOS_DEFAULT;
-                datawriter_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;
-                //datawriter_qos.history().kind = KEEP_ALL_HISTORY_QOS;
-                datawriter_qos.history().kind = KEEP_LAST_HISTORY_QOS;
-                datawriter_qos.history().depth = 10;  // Keep the last 10 samples
+                
+            if (config.writer_qos_settings.isMember("reliability")) {
+                if (config.writer_qos_settings["reliability"].asString() == "RELIABLE_RELIABILITY_QOS")
+                    datawriter_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;
+                else if (config.writer_qos_settings["reliability"].asString() == "BEST_EFFORT_RELIABILITY_QOS")
+                    datawriter_qos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
+            }
+
+            if (config.writer_qos_settings.isMember("durability")) {
+                if (config.writer_qos_settings["durability"].asString() == "VOLATILE_DURABILITY_QOS")
+                    datawriter_qos.durability().kind = VOLATILE_DURABILITY_QOS;
+                else if (config.writer_qos_settings["durability"].asString() == "TRANSIENT_LOCAL_DURABILITY_QOS")
+                    datawriter_qos.durability().kind = TRANSIENT_LOCAL_DURABILITY_QOS;
+            }
+
+            if (config.writer_qos_settings.isMember("history")) {
+                if (config.writer_qos_settings["history"].asString() == "KEEP_LAST_HISTORY_QOS")
+                    datawriter_qos.history().kind = KEEP_LAST_HISTORY_QOS;
+                else if (config.writer_qos_settings["history"].asString() == "KEEP_ALL_HISTORY_QOS")
+                    datawriter_qos.history().kind = KEEP_ALL_HISTORY_QOS;
+            }
+
+            if (config.writer_qos_settings.isMember("history_depth")) {
+                datawriter_qos.history().depth = config.writer_qos_settings["history_depth"].asInt();
+            }
+            
+            
+             //   datawriter_qos.history().depth = 10;  // Keep the last 10 samples
+                
+                
+
+             std::cout << "DataWriter Reliability QoS: " << (datawriter_qos.reliability().kind == RELIABLE_RELIABILITY_QOS ? "RELIABLE" : "BEST_EFFORT") << std::endl;
+
+
+             std::cout << "DataWriter History QoS: " << (datawriter_qos.history().kind == KEEP_LAST_HISTORY_QOS ? "KEEP_LAST" : "KEEP_ALL") << std::endl;
+
+
+             std::cout << "DataWriter History Depth: " << datawriter_qos.history().depth << std::endl;
+
+
+             std::cout << "DataWriter Durability QoS: " << (datawriter_qos.durability().kind == VOLATILE_DURABILITY_QOS ? "VOLATILE" : "TRANSIENT_LOCAL") << std::endl;
+
 
                 datawriter_qos.reliable_writer_qos().times.initialHeartbeatDelay = {0, 0};
                 datawriter_qos.reliable_writer_qos().times.heartbeatPeriod = {2, 0};  
@@ -501,6 +611,13 @@ int main(int argc)
 
     return 0;
 }
+
+
+
+
+
+
+
 
 
 

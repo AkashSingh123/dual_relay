@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include <fstream>
 #include <chrono>
+#include "bridge.h"
 #include <fastdds/rtps/attributes/RTPSParticipantAttributes.h>
 #include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
 #include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
@@ -39,6 +40,7 @@
 #include <fastdds/rtps/transport/UDPv6TransportDescriptor.h>
 #include <fastrtps/attributes/ParticipantAttributes.h>
 #include <fastrtps/attributes/PublisherAttributes.h>
+#include <json/json.h>  // Add this at the top of globals.hpp
 
 
 using namespace eprosima::fastdds::dds;
@@ -86,7 +88,7 @@ void ShapePublisher::load_configs_from_file(const std::string& filename)
         Config conf;
         conf.source_domain_id = config["source_domain_id"].asInt();
         conf.source_destination_ip = config["source_destination_ip"].asString();
-
+        //conf.topic_name = config["topic_name"].asString(); // Read the topic name from the config file
         // Parse the arrays of updated_domain_ids and updated_destination_ips
         for (const auto& domain_id : config["updated_domain_ids"])
         {
@@ -97,6 +99,18 @@ void ShapePublisher::load_configs_from_file(const std::string& filename)
         {
             conf.updated_destination_ips.push_back(ip.asString());
         }
+        
+        for (const auto& topic : config["topics"])
+        {
+            conf.topics.push_back(topic.asString());
+        }
+        
+        
+        
+        
+        conf.qos_settings = config["qos_settings"];  // Load QoS settings from config
+
+        
 
         configs.push_back(conf);
     }
@@ -202,6 +216,12 @@ bool ShapePublisher::init(bool with_security)
             // Create Publisher
             PublisherQos publisher_qos = PUBLISHER_QOS_DEFAULT;
             participant_data.publisher = participant_data.participant->create_publisher(publisher_qos);
+            
+            std::string topic_name = config.topics[i]; // Retrieve topic name from config
+         //   participant_data.topic = participant_data.participant->create_topic(topic_name, type_.get_type_name(), TOPIC_QOS_DEFAULT);
+
+            
+            
             if (!participant_data.publisher)
             {
                 std::cerr << "Failed to create publisher for domain ID: " << config.updated_domain_ids[i] << std::endl;
@@ -210,8 +230,9 @@ bool ShapePublisher::init(bool with_security)
 
             // Create Topic
             TopicQos topic_qos = TOPIC_QOS_DEFAULT;
-            topic_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;     
-            participant_data.topic = participant_data.participant->create_topic("6", type_.get_type_name(), topic_qos);
+            topic_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;    
+             
+            participant_data.topic = participant_data.participant->create_topic(topic_name, type_.get_type_name(), topic_qos);
             if (!participant_data.topic)
             {
                 std::cerr << "Failed to create topic for domain ID: " << config.updated_domain_ids[i] << std::endl;
@@ -219,13 +240,42 @@ bool ShapePublisher::init(bool with_security)
             }
 
             // Configure DataWriter QoS
+            
+            
+            
+            
             DataWriterQos datawriter_qos = DATAWRITER_QOS_DEFAULT;
-            datawriter_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;
-            datawriter_qos.endpoint().unicast_locator_list.clear();
-            datawriter_qos.endpoint().multicast_locator_list.clear();
-            datawriter_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;
-            datawriter_qos.durability().kind = VOLATILE_DURABILITY_QOS;
-            datawriter_qos.history().kind = KEEP_ALL_HISTORY_QOS;
+
+
+
+            if (config.qos_settings.isMember("reliability")) {
+                if (config.qos_settings["reliability"].asString() == "RELIABLE_RELIABILITY_QOS")
+                    datawriter_qos.reliability().kind = RELIABLE_RELIABILITY_QOS;
+                else if (config.qos_settings["reliability"].asString() == "BEST_EFFORT_RELIABILITY_QOS")
+                    datawriter_qos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
+            }
+
+            if (config.qos_settings.isMember("durability")) {
+                if (config.qos_settings["durability"].asString() == "VOLATILE_DURABILITY_QOS")
+                    datawriter_qos.durability().kind = VOLATILE_DURABILITY_QOS;
+                else if (config.qos_settings["durability"].asString() == "TRANSIENT_LOCAL_DURABILITY_QOS")
+                    datawriter_qos.durability().kind = TRANSIENT_LOCAL_DURABILITY_QOS;
+            }
+
+            // Apply history QoS
+            if (config.qos_settings.isMember("history")) {
+                if (config.qos_settings["history"].asString() == "KEEP_LAST_HISTORY_QOS")
+                    datawriter_qos.history().kind = KEEP_LAST_HISTORY_QOS;
+                else if (config.qos_settings["history"].asString() == "KEEP_ALL_HISTORY_QOS")
+                    datawriter_qos.history().kind = KEEP_ALL_HISTORY_QOS;
+            }
+
+            // Apply history depth
+            if (config.qos_settings.isMember("history_depth")) {
+                datawriter_qos.history().depth = config.qos_settings["history_depth"].asInt();
+            }
+
+
 
             datawriter_qos.endpoint().multicast_locator_list.push_back(multicast_locator);
 
@@ -250,6 +300,22 @@ bool ShapePublisher::init(bool with_security)
             std::cout << "  Multicast Locator: " << IPLocator::ip_to_string(multicast_locator) << ":" << multicast_locator.port << std::endl;
             std::cout << "  Calculated Multicast Port: " << multicast_port << std::endl;
             std::cout << "  DataWriter for source IP: " << config.source_destination_ip << " to multicast IP: " << config.updated_destination_ips[i] << std::endl;
+            std::cout << "  Topic Name: " << topic_name << std::endl;  // Print the topic name
+            std::cout << "  Reliability: " << config.qos_settings["reliability"].asString() << std::endl;
+            std::cout << "  Durability: " << config.qos_settings["durability"].asString() << std::endl;
+            std::cout << "  History: " << config.qos_settings["history"].asString() << std::endl;
+            std::cout << "  History Depth: " << config.qos_settings["history_depth"].asInt() << std::endl;
+
+             std::cout << "DataWriter Reliability QoS: " << (datawriter_qos.reliability().kind == RELIABLE_RELIABILITY_QOS ? "RELIABLE" : "BEST_EFFORT") << std::endl;
+
+
+             std::cout << "DataWriter History QoS: " << (datawriter_qos.history().kind == KEEP_LAST_HISTORY_QOS ? "KEEP_LAST" : "KEEP_ALL") << std::endl;
+
+
+             std::cout << "DataWriter History Depth: " << datawriter_qos.history().depth << std::endl;
+
+
+             std::cout << "DataWriter Durability QoS: " << (datawriter_qos.durability().kind == VOLATILE_DURABILITY_QOS ? "VOLATILE" : "TRANSIENT_LOCAL") << std::endl;
         }
     }
 

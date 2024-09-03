@@ -25,10 +25,10 @@ target_link_libraries(NetboxMessage2_type fastcdr fastrtps)
 find_library(JSONCPP_LIB jsoncpp HINTS "/usr/lib" "/usr/lib/x86_64-linux-gnu")
 
 # Create executables and link necessary libraries
-add_executable(Frag_test 
+add_executable(config_sniffer_relay 
     MessageSerialisers/NetboxMessage1PubSubTypes.cxx 
     MessageSerialisers/NetboxMessage2PubSubTypes.cxx 
-    Frag_test.cpp 
+    config_sniffer.cpp 
     subscriber_test2.cpp 
     main.cpp 
     globals.cpp

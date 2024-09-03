@@ -1,34 +1,70 @@
 {
   "configs": [
     {
-      "source_domain_id": 11,
-      "source_destination_ip": "239.255.0.11",
-      "updated_domain_ids": [1],
-      "updated_destination_ips": ["239.255.0.1"]
-    },
-    {
-      "source_domain_id": 1,
-      "source_destination_ip": "239.255.0.1",
-      "updated_domain_ids": [7, 8, 9],
-      "updated_destination_ips": ["239.255.0.7", "239.255.0.8", "239.255.0.9"]
-    },
-    {
       "source_domain_id": 7,
-      "source_destination_ip": "239.255.0.7",
-      "updated_domain_ids": [1],
-      "updated_destination_ips": ["239.255.0.1"]
+      "source_destination_ip": "239.255.0.107",
+      "updated_domain_ids": [101],
+      "updated_destination_ips": ["239.255.0.101"],
+      "topics": ["command"],
+      "qos_settings": {
+        "reliability": "RELIABLE_RELIABILITY_QOS",
+        "durability": "VOLATILE_DURABILITY_QOS",
+        "history": "KEEP_LAST_HISTORY_QOS",
+        "history_depth": 1
+      }
     },
     {
-      "source_domain_id": 8,
-      "source_destination_ip": "239.255.0.8",
-      "updated_domain_ids": [1],
-      "updated_destination_ips": ["239.255.0.1"]
+      "source_domain_id": 101,
+      "source_destination_ip": "239.255.0.101",
+      "updated_domain_ids": [107, 108, 109],
+      "updated_destination_ips": ["239.255.0.107", "239.255.0.108", "239.255.0.109"],
+      "topics": ["command", "command", "command"],
+      "qos_settings": {
+        "reliability": "RELIABLE_RELIABILITY_QOS",
+        "durability": "VOLATILE_DURABILITY_QOS",
+        "history": "KEEP_LAST_HISTORY_QOS",
+        "history_depth": 1
+      }
     },
     {
-      "source_domain_id": 9,
-      "source_destination_ip": "239.255.0.9",
-      "updated_domain_ids": [1],
-      "updated_destination_ips": ["239.255.0.1"]
+      "source_domain_id": 107,
+      "source_destination_ip": "239.255.0.107",
+      "updated_domain_ids": [101],
+      "updated_destination_ips": ["239.255.0.101"],
+      "topics": ["command"],
+      "qos_settings": {
+        "reliability": "RELIABLE_RELIABILITY_QOS",
+        "durability": "VOLATILE_DURABILITY_QOS",
+        "history": "KEEP_LAST_HISTORY_QOS",
+        "history_depth": 1
+      }
+    },
+    {
+      "source_domain_id": 108,
+      "source_destination_ip": "239.255.0.108",
+      "updated_domain_ids": [101],
+      "updated_destination_ips": ["239.255.0.101"],
+      "topics": ["command"],
+      "qos_settings": {
+        "reliability": "RELIABLE_RELIABILITY_QOS",
+        "durability": "VOLATILE_DURABILITY_QOS",
+        "history": "KEEP_LAST_HISTORY_QOS",
+        "history_depth": 1
+      }
+    },
+    {
+      "source_domain_id": 109,
+      "source_destination_ip": "239.255.0.109",
+      "updated_domain_ids": [101],
+      "updated_destination_ips": ["239.255.0.101"],
+      "topics": ["command"],
+      "qos_settings": {
+        "reliability": "RELIABLE_RELIABILITY_QOS",
+        "durability": "VOLATILE_DURABILITY_QOS",
+        "history": "KEEP_LAST_HISTORY_QOS",
+        "history_depth": 1
+      }
     }
   ]
 }
+
