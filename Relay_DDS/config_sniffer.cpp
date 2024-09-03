@@ -32,7 +32,6 @@
 #include <unistd.h>
 #include <fstream>
 #include <chrono>
-#include "bridge.h"
 #include <fastdds/rtps/attributes/RTPSParticipantAttributes.h>
 #include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
 #include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>

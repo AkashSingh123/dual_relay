@@ -33,7 +33,7 @@ add_executable(config_sniffer_relay
     main.cpp 
     globals.cpp
 )
-target_link_libraries(Frag_test fastcdr fastrtps NetboxMessage1_type NetboxMessage2_type pcap ${JSONCPP_LIBRARIES})
+target_link_libraries(config_sniffer_relay fastcdr fastrtps NetboxMessage1_type NetboxMessage2_type pcap ${JSONCPP_LIBRARIES})
 
 add_executable(multiple_writer 
     MessageSerialisers/NetboxMessage1PubSubTypes.cxx 

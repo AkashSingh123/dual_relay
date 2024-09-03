@@ -1,0 +1,7 @@
+/home/akash/git2/fastdds_relay/Relay_DDS/build/CMakeFiles/NetboxMessage1_type.dir
+/home/akash/git2/fastdds_relay/Relay_DDS/build/CMakeFiles/NetboxMessage2_type.dir
+/home/akash/git2/fastdds_relay/Relay_DDS/build/CMakeFiles/config_sniffer_relay.dir
+/home/akash/git2/fastdds_relay/Relay_DDS/build/CMakeFiles/multiple_writer.dir
+/home/akash/git2/fastdds_relay/Relay_DDS/build/CMakeFiles/topic_dds_relay.dir
+/home/akash/git2/fastdds_relay/Relay_DDS/build/CMakeFiles/edit_cache.dir
+/home/akash/git2/fastdds_relay/Relay_DDS/build/CMakeFiles/rebuild_cache.dir
